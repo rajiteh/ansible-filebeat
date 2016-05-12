@@ -10,12 +10,40 @@
 - include: debian.yml
   when: ansible_os_family == 'Debian'
 
+- name: upload ssl certificate
+  template:
+    src: filebeat.crt.j2
+    dest: /etc/filebeat/filebeat.crt
+  when: filebeat_ssl_certificate is defined
+
 - name: create filebeat.yml
   template:
     src: filebeat.yml.j2
     dest: /etc/filebeat/filebeat.yml
   notify:
     - restart filebeat
+
+- name: create filebeat configurations
+  template:
+    src: filebeat.conf.d.yml.j2
+    dest: /etc/filebeat/conf.d/{{item.name}}.yml
+  with_items: filebeat_confd
+  tags:
+    - filebeat_confd
+
+- name: ensure monit conf folder exists
+  file: >
+    path={{ filebeat_monit_config | basedir }}
+    state=directory
+  when: filebeat_monit_config is defined
+
+- name: place filebeat monit config
+  template:
+    src: monit.filebeat.conf.j2
+    dest: "{{ filebeat_monit_config }}"
+  when: filebeat_monit_config is defined
+  notify:
+    - reload monit
 
 - name: flush handlers to prevent start then restart
   meta: flush_handlers

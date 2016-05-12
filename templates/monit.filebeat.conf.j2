@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+# ------------------------------------------
+# Monit configuration file for filebeat
+# ------------------------------------------
+
+check process filebeat with pidfile {{ filebeat_pid_file_path }}
+   group filebeat
+
+   start program = "/usr/sbin/service filebeat restart"
+   stop  program = "/usr/sbin/service filebeat stop"
+
+   if 5 restarts within 5 cycles then timeout

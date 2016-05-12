@@ -1,2 +1,6 @@
 ---
 filebeat_gpg_url: https://packages.elastic.co/GPG-KEY-elasticsearch
+filebeat_confd_defaults:
+  filebeat_config:
+    filebeat:
+      prospectors: []

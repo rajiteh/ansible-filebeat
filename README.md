@@ -33,6 +33,24 @@ You can also store the config in separate `filebeat.yml` file and include it usi
 filebeat_config: "{{ lookup('file', './filebeat.yml')|from_yaml }}"
 ```
 
+ - `filebeat_ssl_certificate` - Contents of the SSL certificate that will be uploaded at `/etc/filebeat/filebeat.crt`. Make sure your config reflects the path.
+ - `filebeat_confd` - Array of sub configurations to be placed in the `/etc/filebeat/conf.d/` folder. Useful if you have multiple host_groups for the same host. Again, make sure the `config_dir` option is set in your configuration.
+  
+  ``` yaml
+  filebeat_confd:
+    - name: conf_file_x # name of the config (without '.yml')
+      config: # content for 'filebeat_config -> filebeat -> prospectors'
+        - paths:
+            - /var/log/messages
+            - /var/log/*.log
+          input_type: log 
+    - name: conf_file_y
+      config:
+        - paths:
+            - /var/log/messages_y
+          input_type: log
+  ```
+
 Common Configurations
 ---------------------
 
