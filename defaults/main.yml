@@ -18,7 +18,7 @@ filebeat_config:
   logging:
     to_syslog: true
     level: error
-
+filebeat_confd_dir: /etc/filebeat/conf.d/
 # The installation state of the filebeat package, passed to the appropriate
 # packaging module (yum/apt) as the 'state'.
 # Set to 'latest' to upgrade.

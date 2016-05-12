@@ -5,6 +5,13 @@ Ansible Filebeat role
 
 Installs Elastic's Filebeat for forwarding logs.
 
+Changelog
+----------
+
+### 12/05/2016
+ * Ability to upload TLS certificate to target.
+ * Optional configuration support for monit.
+ 
 Role Variables
 --------------
 
@@ -33,46 +40,38 @@ You can also store the config in separate `filebeat.yml` file and include it usi
 filebeat_config: "{{ lookup('file', './filebeat.yml')|from_yaml }}"
 ```
 
- - `filebeat_ssl_certificate` - Contents of the SSL certificate that will be uploaded at `/etc/filebeat/filebeat.crt`. Make sure your config reflects the path.
- - `filebeat_confd` - Array of sub configurations to be placed in the `/etc/filebeat/conf.d/` folder. Useful if you have multiple host_groups for the same host. Again, make sure the `config_dir` option is set in your configuration.
-  
-  ``` yaml
-  filebeat_confd:
-    - name: conf_file_x # name of the config (without '.yml')
-      config: # content for 'filebeat_config -> filebeat -> prospectors'
-        - paths:
-            - /var/log/messages
-            - /var/log/*.log
-          input_type: log 
-    - name: conf_file_y
-      config:
-        - paths:
-            - /var/log/messages_y
-          input_type: log
-  ```
+ - `filebeat_ssl_certificate` - Contents of the SSL certificate that will be uploaded at `/etc/filebeat/forwarder.crt`. Make sure your config reflects the path.
+ - `filebeat_monit_config` - Absolute path to place the monit config file. Optional. Will not be placed if not defined.
 
 Common Configurations
 ---------------------
 
-Connecting to Elasticsearch:
+Connecting to Elasticsearch (with TLS):
 
   ``` yaml
   filebeat_config:
     filebeat:
       prospectors:
         - paths:
-            - /var/log/messages
-            - /var/log/*.log
-          input_type: log
+            - "/var/log/elasticsearch/elasticsearch_index_indexing_slowlog.log"
+            - "/var/log/elasticsearch/elasticsearch_index_search_slowlog.log"
+          fields:
+            type: "elasticsearch_slow_logs"
+            app: "elk"
     output:
-      elasticsearch:
-        hosts:
-          - "http://localhost:9200"
-        username: "bob"
-        password: "12345"
+      logstash:
+        hosts: [ "localhost:5044" ]
+        tls:
+          certificate_authorities: [ "/etc/filebeat/forwarder.crt" ]
     logging:
-      to_syslog: true
-      level: error
+      to_syslog: false
+      to_files: true
+      files:
+        path: /var/log/filebeat
+        name: filebeat.log
+        rotateeverybytes: 10485760
+        keepfiles: 7
+      level: info
   ```
 
 License
@@ -84,3 +83,4 @@ Author Information
 ------------------
 
 David Wittman
+Raj Perera (@rajiteh)
