@@ -4,3 +4,4 @@ filebeat_confd_defaults:
   filebeat_config:
     filebeat:
       prospectors: []
+filebeat_pid_file_path: /var/run/filebeat.pid

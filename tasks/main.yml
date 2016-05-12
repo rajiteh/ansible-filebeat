@@ -13,27 +13,21 @@
 - name: upload ssl certificate
   template:
     src: filebeat.crt.j2
-    dest: /etc/filebeat/filebeat.crt
+    dest: /etc/filebeat/forwarder.crt
   when: filebeat_ssl_certificate is defined
 
 - name: create filebeat.yml
   template:
     src: filebeat.yml.j2
     dest: /etc/filebeat/filebeat.yml
+  tags:
+    - filebeat_config
   notify:
     - restart filebeat
 
-- name: create filebeat configurations
-  template:
-    src: filebeat.conf.d.yml.j2
-    dest: /etc/filebeat/conf.d/{{item.name}}.yml
-  with_items: filebeat_confd
-  tags:
-    - filebeat_confd
-
 - name: ensure monit conf folder exists
   file: >
-    path={{ filebeat_monit_config | basedir }}
+    path={{ filebeat_monit_config | dirname }}
     state=directory
   when: filebeat_monit_config is defined
 
