@@ -9,3 +9,10 @@
 - name: Stop and deactivate ansible filebeat monit
   shell: monit stop filebeat && monit unmonitor filebeat
   ignore_errors: yes
+
+- name: Reset filebeat register
+  file: path={{ item }} state=absent
+  with_items:
+    - "/.filebeat"
+    - "/root/.filebeat"
+  when: filebeat_remove_register is defined
