@@ -9,3 +9,9 @@
     name: monit
     state: reloaded
   ignore_errors: yes
+
+- name: reload filebeat
+  service:
+    name: filebeat
+    state: restarted
+  ignore_errors: yes
