@@ -1,0 +1,11 @@
+---
+- name: Stop and deactivate ansible filebeat service
+  service:
+    name: filebeat
+    state: stopped
+    enabled: false
+  ignore_errors: yes
+
+- name: Stop and deactivate ansible filebeat monit
+  shell: monit stop filebeat && monit unmonitor filebeat
+  ignore_errors: yes
