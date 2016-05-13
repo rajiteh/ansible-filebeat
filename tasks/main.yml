@@ -4,4 +4,5 @@
   when: filebeat_deactivate is not defined
 
 - include: remove.yml
+  tags: filebeat
   when: filebeat_deactivate is defined
