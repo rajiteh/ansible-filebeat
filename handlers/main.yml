@@ -3,6 +3,7 @@
   service:
     name: filebeat
     state: restarted
+  ignore_errors: yes
 
 - name: reload monit
   service:
